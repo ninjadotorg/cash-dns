@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"github.com/ninjadotorg/cash-dns/db"
 
+	"crypto/md5"
+	"fmt"
 )
 
 func list(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +46,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 
 	db := db.DB{}
 	db.Load("db.json")
-	db.Set(peerUrl, peerUrl)
+	db.Set(fmt.Sprintf("%x", md5.Sum([]byte(peerUrl))), peerUrl)
 	db.Save()
 
 	json.NewEncoder(w).Encode(result)
