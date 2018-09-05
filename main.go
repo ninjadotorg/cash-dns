@@ -30,14 +30,22 @@ func list(w http.ResponseWriter, r *http.Request) {
 func register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	result := map[string]interface{}{}
+	result["status"] = 1
+
 	peerUrl := r.URL.Query().Get("peer")
+	if peerUrl == "" {
+		result["status"] = -1
+		result["message"] = "param is invalid"
+
+		json.NewEncoder(w).Encode(result)
+		return
+	}
+
 	db := db.DB{}
 	db.Load("db.json")
 	db.Set(peerUrl, peerUrl)
 	db.Save()
-
-	result := map[string]interface{}{}
-	result["status"] = 1
 
 	json.NewEncoder(w).Encode(result)
 }
